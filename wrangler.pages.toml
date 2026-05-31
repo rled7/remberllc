@@ -1,0 +1,9 @@
+# Compatibility wrapper: this repo is a Cloudflare Pages app.
+# The Cloudflare UI currently runs `npx wrangler deploy`, which is a Workers deploy command.
+# This file is NOT used by Pages itself; it exists to document the correct target.
+#
+# Correct command for this project is:
+#   npx wrangler pages deploy
+
+# No configuration required here; `wrangler.toml` already declares Pages build output.
+
