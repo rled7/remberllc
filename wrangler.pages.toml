@@ -7,3 +7,4 @@
 
 # No configuration required here; `wrangler.toml` already declares Pages build output.
 
+yes
