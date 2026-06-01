@@ -1,4 +1,4 @@
-- [ ] Pin Vite to a compatible version (avoid Vite 8 peer conflict with @vitejs/plugin-react 4.x)
+- [x] Pin Vite to a compatible version (avoid Vite 8 peer conflict with @vitejs/plugin-react 4.x)
 - [ ] Regenerate package-lock.json
 - [ ] Commit the dependency changes
 - [ ] Push to master

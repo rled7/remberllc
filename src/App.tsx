@@ -5,6 +5,7 @@ import Business from './pages/Business';
 import Portfolio from './pages/Portfolio';
 import Contact from './pages/Contact';
 import BridgeDemo from './pages/BridgeDemo';
+import SybilDemo from './pages/SybilDemo';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/projects/bridge" element={<BridgeDemo />} />
+          <Route path="/projects/sybil" element={<SybilDemo />} />
         </Routes>
       </main>
       <footer className="footer">

@@ -12,6 +12,17 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    title: 'Sybil Detection Engine',
+    description:
+      'Explainable sybil-wallet scoring for airdrop QA. Eight transparent signals (wallet age, shared funder, batch timing, behavioral repetition, gas similarity, inter-wallet transfers, CEX funding) produce a risk band per wallet, then union-find clustering surfaces coordinated farms. Keyless and deterministic — every score shows its work.',
+    badge: { label: 'Live demo', cls: 'badge-live', live: true },
+    tags: ['TypeScript', 'Graph clustering', 'React', 'Cloudflare'],
+    links: [
+      { label: 'Open live demo', href: '/projects/sybil', internal: true, accent: true },
+      { label: 'GitHub', href: 'https://github.com/rled7/sybil-detection-engine' },
+    ],
+  },
+  {
     title: 'Bridge Cost Optimizer',
     description:
       'Cross-chain bridge route ranking tool. Decomposes the true cost into three layers (source gas, destination gas, protocol fee) and ranks routes by net capital preserved. Flags unreasonable fees as a QA signal.',
