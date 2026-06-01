@@ -14,7 +14,7 @@ const PROJECTS: Project[] = [
   {
     title: 'Sybil Detection Engine',
     description:
-      'Explainable sybil-wallet scoring for airdrop QA. Eight transparent signals (wallet age, shared funder, batch timing, behavioral repetition, gas similarity, inter-wallet transfers, CEX funding) produce a risk band per wallet, then union-find clustering surfaces coordinated farms. Keyless and deterministic — every score shows its work.',
+      'Explainable sybil-wallet scoring for airdrop QA. Eight transparent signals (wallet age, transaction count, shared funder, batch-funding timing, behavioral repetition, gas similarity, inter-wallet transfers, CEX funding) produce a risk band per wallet, then union-find clustering surfaces coordinated farms. Keyless and deterministic — every score shows its work.',
     badge: { label: 'Live demo', cls: 'badge-live', live: true },
     tags: ['TypeScript', 'Graph clustering', 'React', 'Cloudflare'],
     links: [
@@ -36,10 +36,13 @@ const PROJECTS: Project[] = [
   {
     title: 'RAG Alpha Aggregator',
     description:
-      'Retrieval-augmented pipeline that aggregates and surfaces alpha signals from multiple sources — a keyless local classifier for research workflows. Demonstrates applied RAG architecture.',
-    badge: { label: 'Active', cls: 'badge-active' },
-    tags: ['RAG', 'TypeScript', 'Node', 'NLP'],
-    links: [{ label: 'GitHub', href: 'https://github.com/rled7/rag-alpha-aggregator' }],
+      'Keyless local RAG classifier that surfaces airdrop opportunities from noisy feeds — bag-of-words cosine retrieval + keyword rules rank signals by confidence and return steps to qualify. No API key required.',
+    badge: { label: 'Live demo', cls: 'badge-live', live: true },
+    tags: ['RAG', 'TypeScript', 'NLP', 'React', 'Cloudflare'],
+    links: [
+      { label: 'Open live demo', href: '/projects/rag', internal: true, accent: true },
+      { label: 'GitHub', href: 'https://github.com/rled7/rag-alpha-aggregator' },
+    ],
   },
 ];
 

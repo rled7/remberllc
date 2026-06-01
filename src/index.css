@@ -1008,6 +1008,43 @@ textarea.sybil-input {
   margin: 6px 0;
 }
 
+/* ---- RAG Alpha Aggregator demo ---- */
+.opp-rank {
+  display: inline-block;
+  color: var(--steel-muted);
+  font-size: 0.72rem;
+  margin-left: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.opp-confidence { white-space: nowrap; }
+
+.steps-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 0.82rem;
+  color: var(--steel-muted);
+  line-height: 1.7;
+}
+.steps-list li { padding: 0; }
+
+.kind-badge {
+  display: inline-block;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.kind-claim   { background: rgba(210,70,47,0.14); color: #ff9a8b; }
+.kind-testnet { background: rgba(99,130,255,0.14); color: #a5b8ff; }
+.kind-points  { background: rgba(230,149,42,0.14); color: var(--accent-warm); }
+.kind-snapshot{ background: rgba(31,157,87,0.14); color: #6ee7a0; }
+.kind-unknown { background: rgba(138,150,165,0.14); color: var(--steel-muted); }
+
 /* ============================================================
    CONTACT
    ============================================================ */

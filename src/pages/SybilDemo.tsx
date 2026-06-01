@@ -130,9 +130,9 @@ export default function SybilDemo() {
           <span className="eyebrow">Live demo</span>
           <h2 className="dev-title">Sybil Detection Engine</h2>
           <p className="lead">
-            Explainable, keyless sybil scoring. Eight transparent signals (wallet age, shared
-            funder, batch timing, behavioral repetition, gas similarity, inter-wallet transfers,
-            CEX funding) yield a <strong>risk band</strong> per wallet, then union-find clustering
+            Explainable, keyless sybil scoring. Eight transparent signals (wallet age, transaction
+            count, shared funder, batch-funding timing, behavioral repetition, gas similarity,
+            inter-wallet transfers, CEX funding) yield a <strong>risk band</strong> per wallet, then union-find clustering
             groups coordinated farms. Every score shows its work.
           </p>
 

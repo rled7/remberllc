@@ -6,6 +6,7 @@ import Portfolio from './pages/Portfolio';
 import Contact from './pages/Contact';
 import BridgeDemo from './pages/BridgeDemo';
 import SybilDemo from './pages/SybilDemo';
+import RagDemo from './pages/RagDemo';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/projects/bridge" element={<BridgeDemo />} />
           <Route path="/projects/sybil" element={<SybilDemo />} />
+          <Route path="/projects/rag" element={<RagDemo />} />
         </Routes>
       </main>
       <footer className="footer">
