@@ -1,59 +1,105 @@
 import { Link } from 'react-router-dom';
+import Reveal from '../components/Reveal';
+
+const TRUST = [
+  { k: 'Owner-operated', v: 'You deal with the driver — every load' },
+  { k: 'Nationwide', v: 'OTR, regional & local lanes' },
+  { k: 'Direct line', v: 'No call center, no brokered surprises' },
+];
+
+const CARDS = [
+  {
+    num: '01',
+    to: '/business',
+    title: 'Trucking',
+    desc: 'Services, freight types & coverage — what we haul and how we run.',
+  },
+  {
+    num: '02',
+    to: '/portfolio',
+    title: 'Software',
+    desc: 'Full-stack engineering projects by Rene Ledesma, with live demos.',
+  },
+  {
+    num: '03',
+    to: '/contact',
+    title: 'Contact',
+    desc: 'Request a freight quote or get in touch — we respond promptly.',
+  },
+];
 
 export default function Hub() {
   return (
-    <div className="page">
-      <div className="hub-hero">
-        {/* Primary identity: Rember LLC Trucking */}
-        <div className="hub-logo-mark" role="img" aria-label="Rember LLC Trucking">
-          &#9660;
-        </div>
-        <h1 className="hub-name">Rember LLC Trucking</h1>
-        {/* TODO: confirm tagline */}
-        <p className="hub-tagline">
-          Reliable freight, hauled with owner-operator care — nationwide.
-        </p>
+    <>
+      {/* ---- Hero ---- */}
+      <section className="hero">
+        <div className="hero-bg" aria-hidden="true" />
+        <div className="shell hero-inner">
+          <Reveal as="div">
+            <span className="eyebrow">Rember LLC &middot; Carrier</span>
+          </Reveal>
 
-        {/* Primary CTAs */}
-        <div className="hub-links">
-          <Link to="/contact" className="link-button accent">
-            <span className="link-button-icon">&#9993;</span>
-            Get a Quote — Contact Us
-          </Link>
-          <Link to="/business" className="link-button">
-            <span className="link-button-icon">&#9656;</span>
-            Our Trucking Services
-          </Link>
+          <Reveal as="h1" delay={80}>
+            Reliable freight,
+            <br />
+            hauled with <span className="hl">care.</span>
+          </Reveal>
+
+          <Reveal as="p" className="hero-lead" delay={180}>
+            Owner-operated trucking you can actually reach. One truck, full attention —
+            nationwide over-the-road, regional, and local delivery with direct
+            accountability from pickup to drop-off.
+          </Reveal>
+
+          <Reveal className="hero-cta" delay={260}>
+            <Link to="/contact" className="btn btn--accent">
+              Get a quote <span className="arrow" aria-hidden="true">&rarr;</span>
+            </Link>
+            <Link to="/business" className="btn btn--ghost">
+              Our services
+            </Link>
+          </Reveal>
+
+          <Reveal className="trust-row" delay={340}>
+            {TRUST.map((t) => (
+              <div className="trust-item" key={t.k}>
+                <span className="trust-k">{t.k}</span>
+                <span className="trust-v">{t.v}</span>
+              </div>
+            ))}
+          </Reveal>
         </div>
 
-        {/* Secondary nav cards */}
-        <div className="hub-nav-cards">
-          <Link to="/business" className="nav-card">
-            <div className="nav-card-title">Trucking</div>
-            <div className="nav-card-desc">Services, coverage &amp; freight types</div>
-          </Link>
-          <Link to="/portfolio" className="nav-card">
-            <div className="nav-card-title">Portfolio</div>
-            <div className="nav-card-desc">Software projects by Rene Ledesma</div>
-          </Link>
-          <Link to="/contact" className="nav-card">
-            <div className="nav-card-title">Contact</div>
-            <div className="nav-card-desc">Request a quote &middot; get in touch</div>
-          </Link>
+        <div className="scroll-hint" aria-hidden="true">
+          <span>Scroll</span>
+          <span className="dot" />
         </div>
+      </section>
 
-        {/* Tertiary: GitHub link for dev work */}
-        <div className="hub-secondary-links">
-          <a
-            href="https://github.com/rled7"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hub-text-link"
-          >
-            GitHub — github.com/rled7
-          </a>
+      {/* ---- Explore ---- */}
+      <section className="section--tight">
+        <div className="shell">
+          <Reveal className="section-head">
+            <span className="eyebrow">Explore</span>
+            <h2>One operation, two crafts — trucking and software.</h2>
+          </Reveal>
+
+          <div className="nav-cards">
+            {CARDS.map((c, i) => (
+              <Reveal key={c.to} delay={i * 90}>
+                <Link to={c.to} className="nav-card">
+                  <span className="num">{c.num}</span>
+                  <div className="nav-card-title">{c.title}</div>
+                  <div className="nav-card-desc">{c.desc}</div>
+                  <span className="go">
+                    Enter <span aria-hidden="true">&rarr;</span>
+                  </span>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

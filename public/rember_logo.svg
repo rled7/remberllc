@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" role="img" aria-label="Rember LLC">
+  <circle cx="200" cy="200" r="190" fill="#3a3a3a"/>
+  <!-- "REMBER" running vertically, pulled inside the circle so it isn't clipped -->
+  <text x="112" y="118" font-family="Georgia, 'Times New Roman', serif" font-size="30"
+        fill="#ffffff" writing-mode="tb" letter-spacing="9">REMBER</text>
+  <!-- Accent dot -->
+  <circle cx="158" cy="158" r="9" fill="#e6952a"/>
+  <!-- Big serif R, centered-right -->
+  <text x="150" y="288" font-family="Georgia, 'Times New Roman', serif" font-size="190"
+        fill="#ffffff" font-weight="bold">R</text>
+</svg>

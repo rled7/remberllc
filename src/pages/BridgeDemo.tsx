@@ -1,4 +1,6 @@
 import { useState, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
+import Reveal from '../components/Reveal';
 
 // ---- Types (mirrors backend RouteQuote) ----
 
@@ -77,15 +79,23 @@ export default function BridgeDemo() {
   }
 
   return (
-    <div className="page bridge-demo">
-      <div className="section-header">
-        <h2 className="section-title">Cross-Chain Bridge Cost Optimizer</h2>
-        <p className="section-sub">
-          Ranks routes by <strong>net capital preserved</strong> after source gas + destination gas
-          + protocol fee. Flags unreasonable fees (QA signal).
-        </p>
-      </div>
+    <section className="section">
+      <div className="shell">
+        <Reveal className="devzone">
+          <Link to="/portfolio" className="devzone-back">&larr; Portfolio</Link>
+          <span className="eyebrow">Live demo</span>
+          <h2 className="dev-title">Cross-Chain Bridge Cost Optimizer</h2>
+          <p className="lead">
+            Ranks routes by <strong>net capital preserved</strong> after source gas + destination
+            gas + protocol fee. Flags unreasonable fees as a QA signal.
+          </p>
 
+          <div className="demo-frame">
+            <div className="demo-frame-bar">
+              <span className="dots" aria-hidden="true"><i /><i /><i /></span>
+              <span className="url">remberllc.com/api/routes</span>
+            </div>
+            <div className="demo-body">
       <form onSubmit={handleSubmit} className="bridge-form">
         <div className="form-group">
           <label htmlFor="from-chain">From</label>
@@ -191,6 +201,10 @@ export default function BridgeDemo() {
           </table>
         </>
       )}
-    </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
   );
 }

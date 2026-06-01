@@ -20,7 +20,15 @@ export default function App() {
         </Routes>
       </main>
       <footer className="footer">
-        <p>© 2024 Rene Ledesma · Rember LLC · Built with React + Cloudflare Pages</p>
+        <div className="footer-inner">
+          <span className="footer-brand">
+            <img className="brand-logo" src="/rember_logo.svg" alt="" width="26" height="26" /> Rember LLC
+          </span>
+          <span>&copy; {new Date().getFullYear()} Rene Ledesma &middot; Owner-operated trucking &amp; software</span>
+          <a href="https://github.com/rled7" target="_blank" rel="noopener noreferrer">
+            github.com/rled7
+          </a>
+        </div>
       </footer>
     </div>
   );
