@@ -57,6 +57,7 @@
 | # | Date | Title | Status |
 |---|------|-------|--------|
 | 001 | 2026-06-01 | Home nav-cards overlap vertically | ✅ SOLVED |
+| 002 | 2026-06-02 | Hero "Scroll" hint overlaps the trust-stats row | ✅ SOLVED |
 
 ---
 
@@ -176,3 +177,119 @@ container that fully wraps its children (matching `.proj-card`):
   scroll-reveal (`opacity:0` until in view) hides below-fold content in static
   shots. To see the true layout: force `.reveal { opacity:1 }`, collapse any
   `min-height:100vh` hero, and screenshot — or you'll chase artifacts.
+
+---
+
+## 002 — Hero "Scroll" hint overlaps the trust-stats row
+**Date:** 2026-06-02 | **Status:** ✅ SOLVED | **Area:** `src/index.css` `.hero` / `.scroll-hint` (Hub hero) | **Commit:** `5887b41` | **Site build:** `Build 0008`
+
+### Problem
+On the home hero, the decorative **"Scroll" ↓ hint** at the bottom of the screen
+**overlapped the row of trust stats** ("the scroll overlaps with the words
+immediately above it") on shorter / laptop-height screens.
+
+### Expected
+The "Scroll" hint sits cleanly at the bottom of the hero with clear space below
+the trust-stats row — no text/elements touching or overlapping at any viewport
+height.
+
+### Actual
+The "Scroll" label + its animated dot rendered **on top of the trust-stats row**
+(the `01 truck / nationwide / etc.` block), the two visually colliding. Worst on
+**short viewport heights** (laptops, or a browser window that isn't full-height);
+fine on tall screens.
+
+### Context / environment
+- Page: `/` (`src/pages/Hub.tsx`) — the `.hero` section; offending pair is
+  `.hero` (container) + `.scroll-hint` (the hint), styled in `src/index.css`.
+- **Site build at fix:** `Build 0008` · commit `5887b41`. The hero was introduced
+  in `Build 0003` (redesign, `0c4bed8`); `.scroll-hint` got `z-index` +
+  `pointer-events:none` back in `Build 0004` (`4538a9b`) — related history.
+- **Toolchain / software build numbers:**
+  - Vite `^5.4.2` (built with **v5.4.21**) · `@vitejs/plugin-react ^4.3.1`
+  - React `^18.3.1` · react-dom `^18.3.1` · react-router-dom `^6.26.0`
+  - TypeScript `^5.5.3` · **Node v22.22.3** · macOS (Darwin x86_64)
+  - Host: Cloudflare Pages (`remberllc.pages.dev`), auto-deploy on push to `master`.
+- Trigger condition: viewport **height** small enough that the centered hero
+  content reaches the bottom-pinned hint (roughly when usable hero height ≲ the
+  content height + the hint's ~72px footprint).
+
+### Attempts (including what did NOT work)
+1. **Initial instinct: "push the hint down" (lower its `bottom`)** → **wrong lever.**
+   The hint is already pinned to the bottom; lowering `bottom` shoves it toward
+   the screen edge (risking clipping) and does **nothing** to stop the *centered
+   content* from expanding down into it. It would mask the symptom on one screen
+   size and reappear on another.
+2. **Inspected the DOM/CSS to find the true relationship** → found the real cause
+   (below): it's a layout-model collision, not a spacing typo.
+
+### Root cause
+Two layout systems fighting over the same bottom strip:
+- `.hero` is `display: flex; align-items: center; min-height: calc(100vh - 68px)`
+  → its content (`.hero-inner`: headline → lead → CTA → **trust-row**) is
+  **vertically centered**.
+- `.scroll-hint` is a sibling with `position: absolute; bottom: 22px` → **pinned
+  to the hero's bottom**, out of normal flow.
+
+On a short viewport the centered content block is nearly as tall as the hero, so
+its **bottom edge (the trust-row) grows down into the bottom ~22–72px zone** where
+the absolute hint lives. Nothing reserved space for the hint, so they overlap. It
+is height-dependent, which is why tall screens looked fine.
+
+**Relevant CSS (before):**
+```css
+.hero {
+  position: relative;
+  min-height: calc(100vh - 68px);
+  display: flex;
+  align-items: center;   /* content centered… */
+  overflow: hidden;
+}
+.scroll-hint {
+  position: absolute;
+  bottom: 22px;          /* …but hint pinned to bottom → they collide */
+  /* ~72px tall incl. label + 30px dot */
+}
+```
+
+### Solution / Workaround
+✅ **SOLVED in `Build 0008` (`5887b41`).** Reserve space at the hero's bottom so
+the centered content can never reach the pinned hint — one line:
+```css
+.hero {
+  /* …unchanged… */
+  padding-bottom: 88px;  /* reserve the .scroll-hint footprint (bottom:22px + ~50px tall) */
+}
+```
+Because the hint is positioned relative to the hero's padding box, it stays put,
+while the centered content is pushed up off the reserved strip — robust at any
+viewport height.
+
+**Preferred direction going forward — "hide what cannot fit" (not yet shipped):**
+The cleaner philosophy for a *decorative* element (`.scroll-hint` is
+`aria-hidden` + `pointer-events:none`) is to **drop it when there's no room**,
+rather than always reserve space. Candidate for a future `Build 0009`:
+```css
+@media (max-height: 620px) {
+  .scroll-hint { display: none; }   /* hide what cannot fit */
+}
+.hero { min-height: calc(100dvh - 68px); }  /* dvh = visible area; fixes mobile address-bar overcount */
+```
+This pairs well with the reserve fix (reserve on normal screens, hide on tiny
+ones). Ask before shipping — `Build 0008` already resolves the reported bug.
+
+### Verification
+- `npm run build` (`tsc && vite build`, Vite v5.4.21) passed clean — CSS bundle
+  regenerated (`dist/assets/index-BHA6WozS.css`, 21.99 kB).
+- Committed `5887b41`, pushed to `origin/master` → Cloudflare Pages auto-deploy.
+  *(Visual confirmation on the live short-viewport render still recommended.)*
+
+### Prevention / lesson
+- When a **vertically-centered** content block (`align-items:center`) shares a
+  viewport-height container with an **absolutely bottom-pinned** element, expect a
+  collision on short viewports. Fix by **reserving space** (`padding-bottom`) or,
+  for decorative elements, **hiding them when they can't fit** (`@media
+  (max-height: …)`). **Do not** just move the pinned element — that chases the
+  symptom across screen sizes.
+- Prefer `100dvh` over `100vh` for full-height heroes — `vh` overcounts on mobile
+  (counts the area behind the address bar), which makes "doesn't fit" bugs worse.
