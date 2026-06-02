@@ -314,7 +314,8 @@ a { color: inherit; }
 .hero {
   position: relative;
   z-index: 0;
-  min-height: calc(100vh - 68px);
+  /* dvh = visible viewport height; avoids mobile address-bar overcount that vh has */
+  min-height: calc(100dvh - 68px);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -437,6 +438,12 @@ a { color: inherit; }
   0% { transform: scaleY(0.3); transform-origin: top; opacity: 0.3; }
   50% { transform: scaleY(1); opacity: 1; }
   100% { transform: scaleY(0.3); transform-origin: bottom; opacity: 0.3; }
+}
+
+/* Hide what cannot fit: on short viewports drop the decorative scroll hint
+   entirely rather than crowd it against the content above. */
+@media (max-height: 620px) {
+  .scroll-hint { display: none; }
 }
 
 /* ---- Hub nav cards (below hero) ---- */

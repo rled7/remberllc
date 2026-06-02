@@ -3,7 +3,7 @@
 > A plain-English record of every change to the website, so you can see **what
 > changed and when** without scouring commits on GitHub. **Newest build on top.**
 >
-> **Current build:** `Build 0008` — 2026-06-02
+> **Current build:** `Build 0009` — 2026-06-02
 > **Live:** every push to `master` auto-deploys to Cloudflare Pages (`remberllc.pages.dev`).
 
 ## How to use / how the build number works
@@ -25,6 +25,16 @@
 ```
 
 ---
+
+## Build 0009 — 2026-06-02 — Hero responsiveness: hide scroll hint on short screens + dvh
+**Commit(s):** `2907cdc`
+- **"Hide what cannot fit":** on viewports `≤ 620px` tall, the decorative "Scroll"
+  hint is now hidden (`display: none`) instead of crowding the content above it —
+  the preferred follow-up to Build 0008's space-reservation fix.
+- Switched the hero from `100vh` → **`100dvh`** so it measures the *visible*
+  viewport (fixes mobile browsers overcounting the height behind the address bar).
+- Files: `src/index.css` (`.hero` min-height; new `@media (max-height: 620px)`).
+  See problem log `docs/solving-coding-problems.md` #002.
 
 ## Build 0008 — 2026-06-02 — Fix: hero "Scroll" hint overlapping the trust stats
 **Commit(s):** `5887b41`
