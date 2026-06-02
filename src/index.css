@@ -318,6 +318,9 @@ a { color: inherit; }
   display: flex;
   align-items: center;
   overflow: hidden;
+  /* Reserve room for the absolute .scroll-hint (bottom: 22px + ~50px tall)
+     so the vertically-centered hero content can't overlap it on short viewports. */
+  padding-bottom: 88px;
 }
 
 .hero-bg {
