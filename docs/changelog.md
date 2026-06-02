@@ -27,7 +27,7 @@
 ---
 
 ## Build 0009 — 2026-06-02 — Hero responsiveness: hide scroll hint on short screens + dvh
-**Commit(s):** `2907cdc`
+**Commit(s):** `79d2bca`
 - **"Hide what cannot fit":** on viewports `≤ 620px` tall, the decorative "Scroll"
   hint is now hidden (`display: none`) instead of crowding the content above it —
   the preferred follow-up to Build 0008's space-reservation fix.
