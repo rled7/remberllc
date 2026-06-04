@@ -3,6 +3,7 @@ import NavBar from './components/NavBar';
 import Hub from './pages/Hub';
 import Business from './pages/Business';
 import Portfolio from './pages/Portfolio';
+import About from './pages/About';
 import Contact from './pages/Contact';
 import BridgeDemo from './pages/BridgeDemo';
 import SybilDemo from './pages/SybilDemo';
@@ -16,6 +17,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Hub />} />
           <Route path="/business" element={<Business />} />
+          <Route path="/about" element={<About />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/projects/bridge" element={<BridgeDemo />} />
