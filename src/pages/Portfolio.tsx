@@ -44,6 +44,17 @@ const PROJECTS: Project[] = [
       { label: 'GitHub', href: 'https://github.com/rled7/rag-alpha-aggregator' },
     ],
   },
+  {
+    title: 'NexusScale — Image & PDF Upscaler',
+    description:
+      'A 100% in-browser image and PDF upscaler. Pick a multiplier or a 4K/8K resolution target; it enhances on-device with bicubic resampling + denoise/contrast/sharpen, run off the main thread in a Web Worker so the UI never freezes. Zero network calls, no API keys, nothing uploaded — 8K output and the offline claim are verified by a real-browser smoke test.',
+    badge: { label: 'Live demo', cls: 'badge-live', live: true },
+    tags: ['React', 'Canvas', 'Web Workers', 'pdf.js', 'Offline'],
+    links: [
+      { label: 'Open live demo', href: '/projects/nexus', internal: true, accent: true },
+      { label: 'GitHub', href: 'https://github.com/rled7/nexus-scale' },
+    ],
+  },
 ];
 
 function Avatar() {

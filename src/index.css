@@ -852,6 +852,16 @@ a { color: inherit; }
 }
 .demo-body { padding: clamp(20px, 4vw, 36px); }
 
+/* Embedded standalone demo (NexusScale) — same-origin iframe of the real built app. */
+.embed-frame {
+  display: block;
+  width: 100%;
+  height: min(82vh, 860px);
+  min-height: 560px;
+  border: 0;
+  background: #0a0b0e;
+}
+
 .bridge-form {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
