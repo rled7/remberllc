@@ -55,6 +55,17 @@ const PROJECTS: Project[] = [
       { label: 'GitHub', href: 'https://github.com/rled7/nexus-scale' },
     ],
   },
+  {
+    title: 'Strand — Conversation Organizer',
+    description:
+      'Auto-organizes one AI chat into labeled topic strands so you can pull up "everything about X" and feed the model only the relevant slice — cutting tokens without losing context. Three modes: organize a pasted thread, live-route each message as you type, and search across every past conversation at once. 100% local, zero dependencies; the wedge is that it is automatic, not manual folders.',
+    badge: { label: 'Live demo', cls: 'badge-live', live: true },
+    tags: ['TF-IDF', 'Clustering', 'TypeScript', 'Offline', 'Zero-dep'],
+    links: [
+      { label: 'Open live demo', href: '/projects/strand', internal: true, accent: true },
+      { label: 'GitHub', href: 'https://github.com/rled7/strand' },
+    ],
+  },
 ];
 
 function Avatar() {

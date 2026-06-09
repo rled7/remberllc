@@ -9,6 +9,7 @@ import BridgeDemo from './pages/BridgeDemo';
 import SybilDemo from './pages/SybilDemo';
 import RagDemo from './pages/RagDemo';
 import NexusDemo from './pages/NexusDemo';
+import StrandDemo from './pages/StrandDemo';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/projects/sybil" element={<SybilDemo />} />
           <Route path="/projects/rag" element={<RagDemo />} />
           <Route path="/projects/nexus" element={<NexusDemo />} />
+          <Route path="/projects/strand" element={<StrandDemo />} />
         </Routes>
       </main>
       <footer className="footer">
