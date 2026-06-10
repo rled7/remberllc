@@ -53,7 +53,7 @@ function render() {
     const c = COLORS[st.id % COLORS.length];
     const on = active === st.id ? " active" : "";
     return `<div class="strand${on}" data-id="${st.id}">
-      <div class="name"><span class="dot" style="background:${c}"></span>${st.label.join(" · ") || "untitled"}</div>
+      <div class="name"><span class="dot" style="background:${c}"></span>${escapeHtml(st.label.join(" · ")) || "untitled"}</div>
       <div class="meta">${st.messageIndices.length} messages</div></div>`;
   }).join("");
   $("strands").querySelectorAll(".strand").forEach(el =>
@@ -64,7 +64,7 @@ function render() {
     const sid = order[i], c = COLORS[sid % COLORS.length];
     const dim = active !== null && active !== sid ? " dim" : "";
     return `<div class="msg${dim}" style="border-left-color:${c}">
-      <div class="role">${m.role} · strand: ${strands[sid].label.join(",") || sid}</div>${escapeHtml(m.text)}</div>`;
+      <div class="role">${escapeHtml(m.role)} · strand: ${escapeHtml(strands[sid].label.join(",")) || sid}</div>${escapeHtml(m.text)}</div>`;
   }).join("");
 }
 
@@ -79,7 +79,7 @@ function ask() {
   $("status").textContent = `"${q}" → strand [${state.strands[top.id].label.join(", ")}] (score ${top.score.toFixed(2)}). Only that strand would be sent to the model.`;
 }
 
-function escapeHtml(s) { return s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 $("sample").onclick = () => { $("input").value = SAMPLE; organize(); };
 $("organize").onclick = organize;

@@ -32,6 +32,7 @@ export default function StrandDemo() {
               className="embed-frame"
               loading="lazy"
               allow="fullscreen"
+              sandbox="allow-scripts allow-same-origin"
             />
           </div>
           <p className="lead" style={{ marginTop: '1rem', fontSize: '0.9rem', opacity: 0.8 }}>

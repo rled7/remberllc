@@ -33,6 +33,7 @@ export default function NexusDemo() {
               className="embed-frame"
               loading="lazy"
               allow="fullscreen"
+              sandbox="allow-scripts allow-same-origin allow-downloads"
             />
           </div>
           <p className="lead" style={{ marginTop: '1rem', fontSize: '0.9rem', opacity: 0.8 }}>

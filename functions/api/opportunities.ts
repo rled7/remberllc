@@ -1,6 +1,7 @@
 /// <reference types="@cloudflare/workers-types" />
 
 import { runPipeline, MAX_ITEMS } from '../../lib/ragAlpha.js';
+import { rateLimit } from '../../lib/rateLimit.js';
 import type { FeedItem } from '../../lib/ragAlpha.js';
 
 // GET → run the 10-item demo feed (5 signals + 5 noise → 5 opportunities).
@@ -10,6 +11,9 @@ export const onRequestGet: PagesFunction = async () => {
 
 // POST { posts: {author?: string, text: string}[] } → classify custom feed items.
 export const onRequestPost: PagesFunction = async (context) => {
+  const limited = rateLimit(context.request);
+  if (limited) return limited;
+
   let body: unknown;
   try {
     body = await context.request.json();

@@ -1,6 +1,7 @@
 /// <reference types="@cloudflare/workers-types" />
 
 import { analyze, DEMO_ADDRESSES } from '../../lib/sybil.js';
+import { rateLimit } from '../../lib/rateLimit.js';
 
 // GET → analyze the 7 planted demo addresses (5 sybils + 2 organics).
 // Makes the curl smoke-test and the page-on-load auto-run trivial.
@@ -10,6 +11,9 @@ export const onRequestGet: PagesFunction = async () => {
 
 // POST { addresses: string[] } → explainable sybil reports + clusters.
 export const onRequestPost: PagesFunction = async (context) => {
+  const limited = rateLimit(context.request);
+  if (limited) return limited;
+
   let body: unknown;
   try {
     body = await context.request.json();

@@ -4,12 +4,16 @@ import { getMockRoutes } from '../../lib/mock.js';
 import { getLifiRoutes } from '../../lib/lifi.js';
 import { normalize, rank } from '../../lib/costEngine.js';
 import { keyFor, get as cacheGet, set as cacheSet } from '../../lib/cache.js';
+import { rateLimit } from '../../lib/rateLimit.js';
 import type { RouteQuery } from '../../lib/types.js';
 import type { Chain } from '../../lib/types.js';
 
 const VALID_CHAINS: Chain[] = ['ethereum', 'arbitrum', 'optimism', 'base', 'polygon', 'bsc'];
 
 export const onRequestGet: PagesFunction<{ ADAPTER?: string }> = async (context) => {
+  const limited = rateLimit(context.request);
+  if (limited) return limited;
+
   const url = new URL(context.request.url);
   const params = url.searchParams;
 
@@ -28,8 +32,8 @@ export const onRequestGet: PagesFunction<{ ADAPTER?: string }> = async (context)
   if (from === to) {
     return Response.json({ error: '"from" and "to" chains must be different' }, { status: 400 });
   }
-  if (!token) {
-    return Response.json({ error: 'Missing "token" parameter' }, { status: 400 });
+  if (!token || token.length > 16 || !/^[A-Za-z0-9]+$/.test(token)) {
+    return Response.json({ error: 'Missing or invalid "token" parameter' }, { status: 400 });
   }
   const amount = parseFloat(amountStr ?? '');
   if (!amountStr || isNaN(amount) || amount <= 0) {

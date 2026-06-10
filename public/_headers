@@ -1,0 +1,14 @@
+# Cloudflare Pages security headers. Cloudflare serves these for matching paths.
+# CSP is scoped to what the site actually uses: self-hosted bundle + Google Fonts,
+# same-origin /api + iframe demos, Web Workers + canvas/PDF blobs (nexus).
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+/api/*
+  X-Content-Type-Options: nosniff
+  Cache-Control: no-store
