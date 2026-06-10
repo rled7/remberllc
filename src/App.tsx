@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Hub from './pages/Hub';
+import DevHome from './pages/DevHome';
 import Business from './pages/Business';
 import Portfolio from './pages/Portfolio';
 import About from './pages/About';
@@ -10,14 +11,19 @@ import SybilDemo from './pages/SybilDemo';
 import RagDemo from './pages/RagDemo';
 import NexusDemo from './pages/NexusDemo';
 import StrandDemo from './pages/StrandDemo';
+import { siteMode, OTHER_SITE } from './site';
 
 export default function App() {
+  const site = siteMode();
+  const other = OTHER_SITE[site];
+
   return (
-    <div className="app">
-      <NavBar />
+    <div className={`app site-${site}`}>
+      <NavBar site={site} />
       <main className="app-content">
         <Routes>
-          <Route path="/" element={<Hub />} />
+          {/* Home depends on which site this host is: dev portfolio vs trucking business. */}
+          <Route path="/" element={site === 'dev' ? <DevHome /> : <Hub />} />
           <Route path="/business" element={<Business />} />
           <Route path="/about" element={<About />} />
           <Route path="/portfolio" element={<Portfolio />} />
@@ -34,9 +40,12 @@ export default function App() {
           <span className="footer-brand">
             <img className="brand-logo" src="/rember_logo.svg" alt="" width="26" height="26" /> Rember LLC
           </span>
-          <span>&copy; {new Date().getFullYear()} Rene Ledesma &middot; Owner-operated trucking &amp; software</span>
-          <a href="https://github.com/rled7" target="_blank" rel="noopener noreferrer">
-            github.com/rled7
+          <span>
+            &copy; {new Date().getFullYear()} Rene Ledesma &middot;{' '}
+            {site === 'dev' ? 'Software engineering' : 'Owner-operated trucking'}
+          </span>
+          <a href={other.url} target="_blank" rel="noopener noreferrer" className="footer-cross">
+            {other.label} ↗
           </a>
         </div>
       </footer>

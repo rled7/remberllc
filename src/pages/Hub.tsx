@@ -11,19 +11,19 @@ const CARDS = [
   {
     num: '01',
     to: '/business',
-    title: 'Trucking',
-    desc: 'Services, freight types & coverage — what we haul and how we run.',
+    title: 'Services',
+    desc: 'Freight types & coverage — what we haul, and how we run OTR, regional & local.',
   },
   {
     num: '02',
-    to: '/portfolio',
-    title: 'Software',
-    desc: 'Full-stack engineering projects by Rene Ledesma, with live demos.',
+    to: '/about',
+    title: 'About',
+    desc: 'Who’s behind the wheel — owner-operated, with direct accountability on every load.',
   },
   {
     num: '03',
     to: '/contact',
-    title: 'Contact',
+    title: 'Get a quote',
     desc: 'Request a freight quote or get in touch — we respond promptly.',
   },
 ];
@@ -81,7 +81,7 @@ export default function Hub() {
         <div className="shell">
           <Reveal className="section-head">
             <span className="eyebrow">Explore</span>
-            <h2>One operation, two crafts — trucking and software.</h2>
+            <h2>Owner-operated freight, done right.</h2>
           </Reveal>
 
           <div className="nav-cards">
