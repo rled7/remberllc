@@ -101,9 +101,6 @@ export default function About() {
                   Every shipment moves in full compliance with FMCSA regulations. Contact us
                   for the carrier packet and current insurance documentation.
                 </p>
-                <Link to="/contact" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '14px', color: 'var(--accent-strong)', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
-                  Request carrier packet <span aria-hidden="true">&rarr;</span>
-                </Link>
               </div>
             </Reveal>
           </div>
