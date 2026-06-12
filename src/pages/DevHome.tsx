@@ -92,6 +92,7 @@ export default function DevHome() {
             </p>
             <div className="dev-cta">
               <a className="dbtn dbtn--primary" href="#work">View work ↓</a>
+              <a className="dbtn" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Résumé ↗</a>
               <Link className="dbtn" to="/contact">Get in touch</Link>
               <a className="dbtn" href="https://github.com/rled7" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
             </div>
