@@ -29,9 +29,10 @@ export default function Contact() {
 
               <div className="contact-item">
                 <span className="contact-label">Address</span>
-                <span className="contact-value todo">
-                  {/* TODO: Rember LLC registered business address */}
-                  <span className="placeholder-note">TODO: registered business address</span>
+                <span className="contact-value">
+                  90 State Street<br />
+                  Suite 700, Office 40<br />
+                  Albany, NY 12207
                 </span>
               </div>
 
