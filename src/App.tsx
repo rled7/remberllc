@@ -11,6 +11,7 @@ import SybilDemo from './pages/SybilDemo';
 import RagDemo from './pages/RagDemo';
 import NexusDemo from './pages/NexusDemo';
 import StrandDemo from './pages/StrandDemo';
+import ChessDemo from './pages/ChessDemo';
 import { siteMode, OTHER_SITE } from './site';
 
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/projects/rag" element={<RagDemo />} />
           <Route path="/projects/nexus" element={<NexusDemo />} />
           <Route path="/projects/strand" element={<StrandDemo />} />
+          <Route path="/projects/chess" element={<ChessDemo />} />
         </Routes>
       </main>
       <footer className="footer">

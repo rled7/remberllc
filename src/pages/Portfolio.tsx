@@ -12,6 +12,17 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    title: 'Rember Chess — Play & Get Coached',
+    description:
+      'A refined browser chess game: play a real Stockfish engine at adjustable strength, solve a daily mate-in-one, and switch on coach mode — a live eval bar and per-move verdict computed locally by the engine, plus an on-demand "Explain this move" that asks a model for a plain-English reason grounded in the engine\'s own eval delta. Vendored single-threaded WASM engine, so it runs client-side with no special headers; puzzles are validated at build and runtime.',
+    badge: { label: 'Live demo', cls: 'badge-live', live: true },
+    tags: ['Stockfish WASM', 'chess.js', 'Cloudflare Functions', 'Vanilla JS'],
+    links: [
+      { label: 'Open live demo', href: '/projects/chess', internal: true, accent: true },
+      { label: 'GitHub', href: 'https://github.com/rled7/rember-chess' },
+    ],
+  },
+  {
     title: 'Sybil Detection Engine',
     description:
       'Explainable sybil-wallet scoring for airdrop QA. Eight transparent signals (wallet age, transaction count, shared funder, batch-funding timing, behavioral repetition, gas similarity, inter-wallet transfers, CEX funding) produce a risk band per wallet, then union-find clustering surfaces coordinated farms. Keyless and deterministic — every score shows its work.',
