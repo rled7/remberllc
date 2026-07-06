@@ -58,6 +58,7 @@
 |---|------|-------|--------|
 | 001 | 2026-06-01 | Home nav-cards overlap vertically | ✅ SOLVED |
 | 002 | 2026-06-02 | Hero "Scroll" hint overlaps the trust-stats row | ✅ SOLVED |
+| 003 | 2026-06-02 | Gemini research agent halts mid-run — session turns exhausted | 🩹 WORKAROUND |
 
 ---
 
@@ -293,3 +294,144 @@ ones). Ask before shipping — `Build 0008` already resolves the reported bug.
   symptom across screen sizes.
 - Prefer `100dvh` over `100vh` for full-height heroes — `vh` overcounts on mobile
   (counts the area behind the address bar), which makes "doesn't fit" bugs worse.
+
+---
+
+## 003 — Gemini research agent halts mid-run — session turns exhausted
+**Date:** 2026-06-02 | **Status:** 🩹 WORKAROUND | **Area:** `~/.gemini/settings.json` (`maxSessionTurns`) — Gemini CLI token-research swarm | **Commit:** n/a (local tool config, not in repo)
+
+> **Not a `remberllc` site bug** — this is a tooling/infra problem with the
+> Gemini CLI research swarm (token-optimizer research, `~/gemini_research_workspace`).
+> Logged here per the "every extended-time problem gets an entry" rule, and
+> because it is **causally linked to a still-open fabrication problem** (see the
+> "Related / still open" section — read it before re-running the swarm).
+
+### Problem
+A long-running **Gemini CLI** research agent stopped **mid-research**: it
+"consumed all of that session's turns" and terminated before finishing its
+search/triage pass, leaving the research run incomplete.
+
+### Expected
+The agent keeps searching/fetching and triaging sources until the research task
+is actually done — a turn/tool-call budget should not cut it off partway.
+
+### Actual
+The session hit a **turn ceiling** and ended early. Every agent step — including
+**each tool call (web search / fetch)** — counts as one "turn," so a
+search-heavy run burns turns fast and trips the cap well before the topic is
+exhausted. Net effect: partial research, then a hard stop.
+
+### Context / environment
+- Tool: **Gemini CLI `0.44.1`** (`/Users/user/.nvm/versions/node/v22.22.3/bin/gemini`),
+  **Node v22.22.3**, macOS (Darwin 25.5.0).
+- Auth: `oauth-personal` (`~/.gemini/settings.json` → `security.auth.selectedType`).
+- Workload: the token-optimizer research swarm under `~/gemini_research_workspace`
+  (governed by `RESEARCH-PROTOCOL.md` / `SWARM-PROTOCOL.md`), which is
+  fetch-heavy by design (grounded retrieval = many tool calls per source).
+
+### Attempts (including what did NOT work)
+1. **Grepped for an explicit numeric tool-call / search cap** in
+   `SWARM-PROTOCOL.md`, `RESEARCH-PROTOCOL.md`, and all 7 files in
+   `~/Documents/PROJECTS/_research-briefs/` → **none found.** The protocols cap
+   *quality gates*, not turn/tool-call counts. Dead end — the limit is not in the
+   research instructions.
+2. **Inspected `~/.gemini/settings.json`** → it only contained the `security.auth`
+   block; **`maxSessionTurns` was not set**, so the build's default was in force.
+   *Misleading note:* Gemini CLI docs describe the `maxSessionTurns` default as
+   `-1` (unlimited) — yet the agent still ran out, so either this build ships a
+   finite default or the early stop came from a different mechanism. Not fully
+   pinned down (see Root cause).
+3. **Confirmed with the user** that the symptom was specifically "ran out of the
+   session's turns" → identified `maxSessionTurns` as the correct lever.
+
+### Root cause
+Gemini CLI enforces a **per-session turn budget via `maxSessionTurns`**, and it
+counts **every agent step (each tool call included)** against that budget. A
+retrieval-grounded research run makes many tool calls per source, so it exhausts
+the budget and the CLI terminates the session mid-task.
+**NOT fully determined:** whether this build's *default* `maxSessionTurns` is
+finite (contradicting the documented `-1`) or whether a separate quota/limit
+contributed — hence WORKAROUND, not SOLVED. The fix below removes the ceiling
+regardless of which of those was true.
+
+### Solution / Workaround
+🩹 **WORKAROUND** — explicitly remove the turn ceiling. Added one key to
+`~/.gemini/settings.json`:
+```json
+{
+  "security": { "auth": { "selectedType": "oauth-personal" } },
+  "maxSessionTurns": -1
+}
+```
+`-1` = unlimited turns, so the agent runs until the task completes instead of
+being cut off. Reversible (delete the one line). **Requires restarting the
+`gemini` session** — settings are read at launch.
+Why "workaround," not "solved": it lifts the cap rather than explaining why the
+documented-unlimited default didn't apply, and — more importantly — an unbounded
+turn budget on a swarm that is **currently fabricating** (below) means it can now
+fabricate *more*, not less. Unblocking and root-fixing are different things here.
+
+### Verification
+- `python3 -c "import json; ..."` → file parses as valid JSON, `maxSessionTurns == -1`.
+- Behavioral confirmation (agent now runs to completion without an early turn
+  stop) is **pending the next `gemini` run** — not yet observed.
+
+### Prevention / lesson
+- For long, autonomous, retrieval-heavy agent runs, set the turn/step budget
+  **deliberately** (`maxSessionTurns: -1` or a high explicit number) up front —
+  the default is a silent mid-run guillotine for fetch-heavy work.
+- **But never lift a budget cap on an *ungrounded* swarm.** A turn cap is a weak
+  accidental backstop against runaway fabrication; removing it only helps if the
+  grounding + per-batch validator gates in `RESEARCH-PROTOCOL.md` are actually
+  enforced. Pair "unlimited turns" with "mandatory fetch + validate," or you
+  scale the wrong thing.
+
+### Related / still open — ⚠️ READ BEFORE RE-RUNNING THE SWARM
+The same swarm **re-triggered the original 25k fabrication problem.** The shared
+URL registry `~/gemini_research_workspace/covered-urls.txt` holds **49,997
+entries** — implausibly high vs. what was actually fetched, and ~the same scale
+as the **49,225** fabricated entries from the first incident
+(`token-research-25k-spec` memory). Control-validated forensics this session
+(bogus IDs correctly return "Article not found", so the checker works):
+- Five domains are each padded to ~10,000 entries: `scribd.com` (10,047),
+  `dspace.mit.edu` (9,998), `dash.harvard.edu` (9,974), `arxiv.org` (9,960),
+  `jstor.org` (9,923) — together ~49,900 of 49,997.
+- **scribd:** every URL is `/document/<random>/Research-Paper` (identical slug) →
+  template-generated. **dspace/dash:** bare `handle/<7-digit>` IDs, but real
+  DSpace/DASH handles require a `1721.1/` / `1/` prefix → invalid → fabricated.
+- **arXiv `2601–2606` band (~9,930): NOT future-dated** (Jan–Jun 2026 are real
+  months — today is 2026-06-02; that's *why* they slipped past a naive future
+  check). They are **valid-format RANDOM IDs**: a fixed random sample resolved
+  **only ~5/30 (~17%)**, the rest return "Article not found"; the few that
+  resolve are off-topic collisions (spin glasses, chest X-rays), not findings.
+- **jstor (~9,923): topically implausible + UNVERIFIED.** 10k JSTOR
+  (humanities/social-science archive) hits on an LLM-inference topic is absurd
+  and shares the batch signature, but JSTOR is unreachable from the sandbox, so
+  fabrication is strongly suspected, not proven.
+- **9,971 of 9,982 `mini-*.md` files were created in the SAME MINUTE**
+  (`2026-06-02 18:10`) → machine batch-dump, not research. They cite the same
+  synthetic URLs.
+- **Prose evaded last incident's tell:** analysis paragraphs are now **100%
+  unique** (49,858 distinct), vs. incident #1's 81 paragraphs reused 49k times.
+  The swarm now confabulates a *unique* analysis per *fake* URL — defeating both
+  byte-dedup AND prose-dedup. *Lesson: dedup ≠ authenticity, and "the prose is
+  all unique" ≠ real. The only ground truth is: does the URL resolve to a real,
+  ON-TOPIC page?*
+- **Ledger is ordered genuine-first, fabricated-appended:** head = real on-topic
+  sources (anthropic launch, artificialanalysis, real arXiv like `2402.11131`
+  SampleAttention / `2407.11550` Ada-KV); tail = the synthetic block.
+
+Genuine core ≈ **~150 candidate entries pending per-URL verification** (NOT
+confirmed real — some non-mega entries also look synthetic, e.g.
+`artificialanalysis.ai/models/deepseek-v4-pro/value-report`). The discriminator
+is **resolves + on-topic**, scattered across both band and non-band arXiv.
+
+This fabrication is **NOT fixed.** The authoritative REAL corpus lives in
+`~/.claude/jobs/01585db7/` (122 mini-batches, 134 unique URLs, syntheses) — the
+gemini workspace is the *fabrication* workspace and is likely wholesale
+disposable. Cleanup decision (user 2026-06-02): **hard delete**, but only after
+"diagnose more first" — so the keep-set must be pinned (or the workspace
+confirmed redundant vs. the job dir) BEFORE deleting. Removing the turn cap (this
+entry's fix) without fixing the fabrication lets the swarm generate fiction
+faster — so re-running the swarm is gated on enforcing the
+`RESEARCH-PROTOCOL.md` fetch+validate gates.
