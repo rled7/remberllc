@@ -6,7 +6,8 @@ import { rateLimit } from '../../lib/rateLimit.js';
 // GET → analyze the 7 planted demo addresses (5 sybils + 2 organics).
 // Makes the curl smoke-test and the page-on-load auto-run trivial.
 export const onRequestGet: PagesFunction = async () => {
-  return Response.json(analyze(DEMO_ADDRESSES));
+  // _buildMarker: deploy-verification tag, safe to remove once auto-deploy is confirmed working.
+  return Response.json({ ...analyze(DEMO_ADDRESSES), _buildMarker: 'deploy-check-20260706' });
 };
 
 // POST { addresses: string[] } → explainable sybil reports + clusters.
