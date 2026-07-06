@@ -45,8 +45,6 @@ export interface AnalyzeResult {
 // ---- Mock fixtures + synthesizer ----
 
 const SYBIL_FUNDER = '0xFARMER0000000000000000000000000000000001';
-const NOW = Math.floor(Date.now() / 1000);
-const SYBIL_BASE = NOW - 7 * 86400;
 const SYBIL_SEQ = ['swap', 'stake', 'claim', 'swap'];
 const SYBIL_GAS = [22, 22, 23, 22];
 
@@ -65,24 +63,27 @@ const ORGANIC_ADDRS = [
 /** The 7 demo addresses (5 planted sybils + 2 organics) for the "Load demo" button. */
 export const DEMO_ADDRESSES = [...SYBIL_ADDRS, ...ORGANIC_ADDRS];
 
-/** Temporary diagnostic: raw clock values to root-cause a live wallet-age offset bug. Remove once resolved. */
-export function _debugClock() {
-  return { moduleScopeNOW: NOW, requestTimeNowSec: Math.floor(Date.now() / 1000), sybilBase: SYBIL_BASE, sybil0FirstTxTs: SYBIL_BASE + 10 };
+// NOTE: fixture/synthesized timestamps are built from a `now` PARAMETER, never
+// from a module-top-level `Date.now()`. Cloudflare Workers evaluate top-level
+// module code once at cold start under a frozen/non-live clock (Date.now()
+// returns 0 there, as a Spectre-style timing mitigation) — real wall-clock
+// time is only available once execution is inside a request handler. `now` is
+// threaded down from `analyze()`'s request-time `nowTs`, the same value used
+// for scoring, so fixtures and scoring always agree on "now".
+
+/** Builds the 7 demo fixtures relative to a request-time `now` (unix seconds). */
+function buildFixtures(now: number): Record<string, WalletFeatures> {
+  const sybilBase = now - 7 * 86400;
+  return {
+    [SYBIL_ADDRS[0]]: { address: SYBIL_ADDRS[0], firstTxTs: sybilBase + 10, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [sybilBase + 10], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[1], SYBIL_ADDRS[2]] },
+    [SYBIL_ADDRS[1]]: { address: SYBIL_ADDRS[1], firstTxTs: sybilBase + 120, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [sybilBase + 120], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[0], SYBIL_ADDRS[3]] },
+    [SYBIL_ADDRS[2]]: { address: SYBIL_ADDRS[2], firstTxTs: sybilBase + 240, txCount: 6, funders: [SYBIL_FUNDER], fundedTs: [sybilBase + 240], gasPrices: [22, 23, 22, 22], actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[4]] },
+    [SYBIL_ADDRS[3]]: { address: SYBIL_ADDRS[3], firstTxTs: sybilBase + 360, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [sybilBase + 360], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[1], SYBIL_ADDRS[4]] },
+    [SYBIL_ADDRS[4]]: { address: SYBIL_ADDRS[4], firstTxTs: sybilBase + 480, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [sybilBase + 480], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[2], SYBIL_ADDRS[3]] },
+    [ORGANIC_ADDRS[0]]: { address: ORGANIC_ADDRS[0], firstTxTs: now - 730 * 86400, txCount: 248, funders: ['0xCEX_COINBASE_HOT_WALLET_0000000000000001'], fundedTs: [now - 730 * 86400], gasPrices: [18, 25, 31, 14, 22, 40, 12, 19], actionSeq: ['swap', 'lp', 'vote', 'claim', 'bridge', 'swap', 'unstake'], transfersToAnalyzed: [] },
+    [ORGANIC_ADDRS[1]]: { address: ORGANIC_ADDRS[1], firstTxTs: now - 400 * 86400, txCount: 87, funders: ['0xCEX_BINANCE_HOT_WALLET_00000000000000001'], fundedTs: [now - 400 * 86400], gasPrices: [20, 35, 28, 15, 42, 18, 30, 25, 22], actionSeq: ['bridge', 'swap', 'stake', 'claim', 'vote', 'lp'], transfersToAnalyzed: [] },
+  };
 }
-
-const FIXTURES: Record<string, WalletFeatures> = {
-  [SYBIL_ADDRS[0]]: { address: SYBIL_ADDRS[0], firstTxTs: SYBIL_BASE + 10, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [SYBIL_BASE + 10], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[1], SYBIL_ADDRS[2]] },
-  [SYBIL_ADDRS[1]]: { address: SYBIL_ADDRS[1], firstTxTs: SYBIL_BASE + 120, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [SYBIL_BASE + 120], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[0], SYBIL_ADDRS[3]] },
-  [SYBIL_ADDRS[2]]: { address: SYBIL_ADDRS[2], firstTxTs: SYBIL_BASE + 240, txCount: 6, funders: [SYBIL_FUNDER], fundedTs: [SYBIL_BASE + 240], gasPrices: [22, 23, 22, 22], actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[4]] },
-  [SYBIL_ADDRS[3]]: { address: SYBIL_ADDRS[3], firstTxTs: SYBIL_BASE + 360, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [SYBIL_BASE + 360], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[1], SYBIL_ADDRS[4]] },
-  [SYBIL_ADDRS[4]]: { address: SYBIL_ADDRS[4], firstTxTs: SYBIL_BASE + 480, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [SYBIL_BASE + 480], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[2], SYBIL_ADDRS[3]] },
-  [ORGANIC_ADDRS[0]]: { address: ORGANIC_ADDRS[0], firstTxTs: NOW - 730 * 86400, txCount: 248, funders: ['0xCEX_COINBASE_HOT_WALLET_0000000000000001'], fundedTs: [NOW - 730 * 86400], gasPrices: [18, 25, 31, 14, 22, 40, 12, 19], actionSeq: ['swap', 'lp', 'vote', 'claim', 'bridge', 'swap', 'unstake'], transfersToAnalyzed: [] },
-  [ORGANIC_ADDRS[1]]: { address: ORGANIC_ADDRS[1], firstTxTs: NOW - 400 * 86400, txCount: 87, funders: ['0xCEX_BINANCE_HOT_WALLET_00000000000000001'], fundedTs: [NOW - 400 * 86400], gasPrices: [20, 35, 28, 15, 42, 18, 30, 25, 22], actionSeq: ['bridge', 'swap', 'stake', 'claim', 'vote', 'lp'], transfersToAnalyzed: [] },
-};
-
-const FIXTURE_LOOKUP: Record<string, WalletFeatures> = Object.fromEntries(
-  Object.entries(FIXTURES).map(([k, v]) => [k.toLowerCase(), v])
-);
 
 function fnv1a(str: string): number {
   let h = 2166136261 >>> 0;
@@ -96,7 +97,7 @@ function lcg(seed: number): () => number {
 const SYNTH_ACTIONS = ['swap', 'lp', 'stake', 'unstake', 'vote', 'claim', 'bridge', 'mint'];
 
 /** Deterministic synthesized features for any unknown address (demo never breaks). */
-function synthesize(address: string): WalletFeatures {
+function synthesize(address: string, now: number): WalletFeatures {
   const hash = fnv1a(address.toLowerCase());
   const rand = lcg(hash);
   const ageDays = 31 + Math.floor(rand() * 900);
@@ -104,13 +105,14 @@ function synthesize(address: string): WalletFeatures {
   const gasPrices = Array.from({ length: 4 + Math.floor(rand() * 6) }, () => 12 + Math.floor(rand() * 40));
   const actionSeq = Array.from({ length: 3 + Math.floor(rand() * 5) }, () => SYNTH_ACTIONS[Math.floor(rand() * SYNTH_ACTIONS.length)]);
   const funder = '0xUNKNOWN' + hash.toString(16).padStart(8, '0').repeat(4).slice(0, 32);
-  const firstTxTs = NOW - ageDays * 86400;
+  const firstTxTs = now - ageDays * 86400;
   return { address, firstTxTs, txCount, funders: [funder], fundedTs: [firstTxTs], gasPrices, actionSeq, transfersToAnalyzed: [] };
 }
 
-function getFeatures(address: string): WalletFeatures {
-  const fixture = FIXTURE_LOOKUP[address.toLowerCase()];
-  return fixture ? { ...fixture, address } : synthesize(address);
+function getFeatures(address: string, now: number): WalletFeatures {
+  const fixtures = buildFixtures(now);
+  const fixture = Object.entries(fixtures).find(([k]) => k.toLowerCase() === address.toLowerCase())?.[1];
+  return fixture ? { ...fixture, address } : synthesize(address, now);
 }
 
 // ---- Scoring ----
@@ -271,8 +273,8 @@ export function analyze(rawAddresses: string[]): AnalyzeResult {
   const addresses = normalizeAddresses(rawAddresses);
   if (addresses.length === 0) return { reports: [], clusters: [] };
 
-  const all = addresses.map(getFeatures);
   const nowTs = Math.floor(Date.now() / 1000);
+  const all = addresses.map((a) => getFeatures(a, nowTs));
   const ctx = buildContext(all);
   const scored = all.map((f) => scoreWallet(f, ctx, all, nowTs));
   const { clusterIds, clusters: clusterMap } = clusterWallets(all);

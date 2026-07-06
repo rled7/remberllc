@@ -1,13 +1,12 @@
 /// <reference types="@cloudflare/workers-types" />
 
-import { analyze, DEMO_ADDRESSES, _debugClock } from '../../lib/sybil.js';
+import { analyze, DEMO_ADDRESSES } from '../../lib/sybil.js';
 import { rateLimit } from '../../lib/rateLimit.js';
 
 // GET → analyze the 7 planted demo addresses (5 sybils + 2 organics).
 // Makes the curl smoke-test and the page-on-load auto-run trivial.
 export const onRequestGet: PagesFunction = async () => {
-  // _buildMarker/_debugClock: temporary deploy + clock diagnostics, remove once root-caused.
-  return Response.json({ ...analyze(DEMO_ADDRESSES), _buildMarker: 'deploy-check-20260706', _debugClock: _debugClock() });
+  return Response.json(analyze(DEMO_ADDRESSES));
 };
 
 // POST { addresses: string[] } → explainable sybil reports + clusters.
