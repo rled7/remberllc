@@ -59,6 +59,95 @@
 | 001 | 2026-06-01 | Home nav-cards overlap vertically | ✅ SOLVED |
 | 002 | 2026-06-02 | Hero "Scroll" hint overlaps the trust-stats row | ✅ SOLVED |
 | 003 | 2026-06-02 | Gemini research agent halts mid-run — session turns exhausted | 🩹 WORKAROUND |
+| 004 | 2026-07-06 | Sybil wallet-age shows ~56 years live, correct locally | ✅ SOLVED |
+
+---
+
+## 004 — Sybil wallet-age shows ~56 years live, correct locally
+**Date:** 2026-07-06 | **Status:** ✅ SOLVED | **Area:** `lib/sybil.ts` (module-scope clock) | **Commit:** `cc7bff5`
+
+### Problem
+The Sybil Detection demo's planted "new" wallets showed wallet age **~56.5
+years** in production, while local dev consistently showed the correct
+**~7.0 days**.
+
+### Expected
+Sybil wallets should read ~7 days old (`isNew = true`, +15 risk points);
+organic wallets ~730 / ~400 days old.
+
+### Actual
+Live `/api/analyze` returned `wallet_age_new` value **"20647.8 days"** for a
+wallet that should be 7 days old. Organics showed proportionally inflated
+values too (21370.8, 21040.8 days) — the same **relative deltas** (730, 400
+days) between wallets, but with a constant ~20640-day offset added to all of
+them.
+
+### Context / environment
+Cloudflare Pages Function (`functions/api/analyze.ts` → `lib/sybil.ts`),
+**production only**; `wrangler pages dev` locally always showed correct
+values, which is exactly what made this look like a stale-deploy issue rather
+than a code bug.
+
+### Attempts (including what did NOT work)
+1. Assumed live was serving a stale build — the sybil fix commit `0c4bed8`
+   had sat on `origin/master` since 2026-06-01, over a month, unreleased.
+   Pushed a **docs-only** commit and polled live: saw no change, and
+   **wrongly concluded "auto-deploy is broken."** This was an invalid test —
+   a docs-only commit can't change the build output either way, so the poll
+   could never have disproven the theory. (User caught this reasoning error.)
+2. Added a `_buildMarker` field baked directly into the `/api/analyze` JSON
+   response, pushed, confirmed it appeared live → **proved auto-deploy DOES
+   work**, invalidating the stale-deploy theory entirely, while the age bug
+   persisted.
+3. Checked response headers for edge caching (`cache-control: no-store`) →
+   ruled out caching as the cause.
+4. Added a temporary `_debugClock()` diagnostic returning raw values
+   (`moduleScopeNOW`, `requestTimeNowSec`, `sybilBase`, `sybil0FirstTxTs`),
+   pushed, curled live → got hard numbers instead of guessing further.
+
+### Root cause
+`lib/sybil.ts` had `const NOW = Math.floor(Date.now() / 1000)` at **module top
+level**. Cloudflare Workers evaluate top-level module code once at cold start
+under a **frozen/non-live clock** (`Date.now()` returns `0` there — a
+Spectre-style timing-attack mitigation); real wall-clock time is only
+available once execution is inside a request handler. Confirmed with live
+data: `moduleScopeNOW: 0`, `requestTimeNowSec: 1783362345` (a normal current
+timestamp), `sybilBase: -604800` (= `0 - 7*86400`) — proving the broken `NOW`
+propagated straight through. Local `wrangler pages dev` (under Node) never
+freezes the clock, so it always looked correct there — an accurate-looking
+local test that was actually testing the wrong runtime's behavior.
+
+### Solution / Workaround
+✅ **SOLVED.** Moved all "now" computation to request time: fixtures
+(`buildFixtures(now)`) and the `synthesize()` fallback now take `now` as a
+parameter, threaded from `analyze()`'s existing per-request `nowTs` (computed
+inside a function body, which Workers evaluate live) — the same pattern
+already correctly used for scoring. Removed the module-level
+`NOW`/`SYBIL_BASE` constants entirely. Cleaned up the temporary
+`_buildMarker`/`_debugClock` diagnostics once confirmed fixed.
+
+### Verification
+- Local `wrangler pages dev`: sybil wallets → 7.0 days, organics → 730.0 /
+  400.0 days (clean response, no debug fields).
+- **Live** `https://remberllc.pages.dev/api/analyze` post-deploy: sybil
+  wallets → 7.0 days, organics → 730.0 / 400.0 days, debug fields absent.
+  Confirmed via direct curl, not inferred.
+
+### Prevention / lesson
+- **Never compute `Date.now()` (or anything time-sensitive) at module top
+  level in a Cloudflare Worker / Pages Function** — it runs once at cold
+  start under a frozen clock. Always compute inside a function body
+  (request-time), and thread the value down as a parameter to anything that
+  needs it (fixtures, synthesizers, etc.).
+- **Local `wrangler dev` does not reproduce this cold-start clock freeze** —
+  a passing local test here is not proof of correctness in production. When
+  "local is right, live is wrong" for anything clock/time/random/crypto
+  related, suspect a runtime-environment difference before a stale deploy.
+- **A check is not verification unless it could have failed.** The
+  docs-only-commit test in attempt #1 looked like due diligence but
+  structurally could not distinguish "auto-deploy works" from "auto-deploy is
+  broken," since nothing in that commit could change the build output.
+  (Escalated separately into the `feedback-verify-before-claiming` memory.)
 
 ---
 
