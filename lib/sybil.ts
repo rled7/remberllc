@@ -65,6 +65,11 @@ const ORGANIC_ADDRS = [
 /** The 7 demo addresses (5 planted sybils + 2 organics) for the "Load demo" button. */
 export const DEMO_ADDRESSES = [...SYBIL_ADDRS, ...ORGANIC_ADDRS];
 
+/** Temporary diagnostic: raw clock values to root-cause a live wallet-age offset bug. Remove once resolved. */
+export function _debugClock() {
+  return { moduleScopeNOW: NOW, requestTimeNowSec: Math.floor(Date.now() / 1000), sybilBase: SYBIL_BASE, sybil0FirstTxTs: SYBIL_BASE + 10 };
+}
+
 const FIXTURES: Record<string, WalletFeatures> = {
   [SYBIL_ADDRS[0]]: { address: SYBIL_ADDRS[0], firstTxTs: SYBIL_BASE + 10, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [SYBIL_BASE + 10], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[1], SYBIL_ADDRS[2]] },
   [SYBIL_ADDRS[1]]: { address: SYBIL_ADDRS[1], firstTxTs: SYBIL_BASE + 120, txCount: 5, funders: [SYBIL_FUNDER], fundedTs: [SYBIL_BASE + 120], gasPrices: SYBIL_GAS, actionSeq: SYBIL_SEQ, transfersToAnalyzed: [SYBIL_ADDRS[0], SYBIL_ADDRS[3]] },
