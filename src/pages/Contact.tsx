@@ -1,6 +1,69 @@
 import Reveal from '../components/Reveal';
+import { siteMode } from '../site';
 
-export default function Contact() {
+function DevContact() {
+  return (
+    <section className="section">
+      <div className="shell">
+        <Reveal className="section-head">
+          <span className="eyebrow">Contact</span>
+          <h2>Let's talk software.</h2>
+          <p className="lead">Reach out about the projects below, or just say hello.</p>
+        </Reveal>
+
+        <div className="contact-grid">
+          <Reveal>
+            <div className="contact-list">
+              <div className="contact-item">
+                <span className="contact-label">Email</span>
+                <span className="contact-value">
+                  <a href="mailto:rledesma@remberllc.com">rledesma@remberllc.com</a>
+                </span>
+              </div>
+
+              <div className="contact-item">
+                <span className="contact-label">GitHub</span>
+                <span className="contact-value">
+                  <a href="https://github.com/rled7" target="_blank" rel="noopener noreferrer">
+                    github.com/rled7
+                  </a>
+                </span>
+              </div>
+
+              <div className="contact-item">
+                <span className="contact-label">LinkedIn</span>
+                <span className="contact-value">
+                  <a
+                    href="https://www.linkedin.com/in/rene-ledesma"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    linkedin.com/in/rene-ledesma
+                  </a>
+                </span>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <div className="quote-box">
+              <h3>Open to opportunities</h3>
+              <p>
+                Full-stack and AI-tooling work — the projects on this site (RAG pipelines, bridge
+                routing, sybil detection) are representative of what I build.
+              </p>
+              <a className="btn btn--accent" href="mailto:rledesma@remberllc.com">
+                Email me <span className="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BusinessContact() {
   return (
     <section className="section">
       <div className="shell">
@@ -65,4 +128,8 @@ export default function Contact() {
       </div>
     </section>
   );
+}
+
+export default function Contact() {
+  return siteMode() === 'dev' ? <DevContact /> : <BusinessContact />;
 }
