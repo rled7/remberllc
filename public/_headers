@@ -12,3 +12,7 @@
 /api/*
   X-Content-Type-Options: nosniff
   Cache-Control: no-store
+
+/resume.pdf
+  Content-Disposition: inline; filename="Software_Engineering_Resume_10_16_26.pdf"
+  Cache-Control: public, max-age=0, must-revalidate

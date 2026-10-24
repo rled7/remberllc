@@ -36,6 +36,11 @@ Every `git push` to `master` triggers a new Cloudflare Pages build + deploy auto
 just edit, commit, push.
 
 ## Future deploy notes
+
+- NOVO is available at `/projects/novo` with a standalone experience at `/demos/novo/`. Its editable source and rebuild instructions are in `demo-src/novo/README.md` and `docs/NOVO.md`. The compiled static assets are included in the normal portfolio build.
 - Real LI.FI quotes: set the Pages env var `ADAPTER = lifi` (the adapter is wired and fixture-tested).
 - If you later split the dev portfolio onto a subdomain (e.g. `portfolio.remberllc.com`), add it as another
   custom domain / Pages project — same account, no DNS hassle.
+# DSA Study Buddy
+
+The public study workspace is served at `/demos/dsa/`, with its portfolio page at `/projects/dsa`. See `docs/DSA_STUDY_BUDDY.md` for source, rebuild, execution limits, and local-only AI features. Normal deployment uses the committed generated assets; run `npm run demo:dsa:build` when editing its source.

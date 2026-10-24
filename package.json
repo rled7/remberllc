@@ -6,7 +6,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "pages:dev": "wrangler pages dev dist --port 8788"
+    "pages:dev": "wrangler pages dev dist --port 8788",
+    "demo:novo:build": "npm --prefix demo-src/novo ci && npm --prefix demo-src/novo run build && node scripts/sync-novo.mjs",
+    "demo:dsa:build": "npm --prefix demo-src/dsa ci && npm --prefix demo-src/dsa run build:public && node scripts/sync-dsa.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

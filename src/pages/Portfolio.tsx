@@ -12,9 +12,23 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    title: 'DSA Study Buddy',
+    description: 'A coding study workspace organized by algorithm pattern. Write JavaScript, run test cases in a disposable Web Worker, compare reference solutions, browse system design and language references, and save progress on your device. The full local edition adds an Ollama assistant and retrieval over your notes.',
+    badge: { label: 'Interactive demo', cls: 'badge-live', live: true },
+    tags: ['TypeScript', 'Web Workers', 'Algorithms', 'Local progress'],
+    links: [{ label: 'Open live demo', href: '/projects/dsa', internal: true, accent: true }],
+  },
+  {
+    title: 'NOVO — Premium Brand Experience',
+    description: 'A premium sneaker brand concept demonstrating layered parallax, pointer responsive 3D, scroll controlled feature reveals, four paired sneaker/background colorways, a center timed brand story, animated statistics, and a bold call to action. The format can be adapted for perfume, premium property, fashion, creative portfolios, and premium services.',
+    badge: { label: 'Interactive demo', cls: 'badge-live', live: true },
+    tags: ['React', 'TypeScript', 'Three.js', 'GSAP', 'Responsive design'],
+    links: [{ label: 'Explore live demo', href: '/projects/novo', internal: true, accent: true }],
+  },
+  {
     title: 'Rember Chess — Play & Get Coached',
     description:
-      'A refined browser chess game: play a real Stockfish engine at adjustable strength, solve a daily mate-in-one, and switch on coach mode — a live eval bar and per-move verdict computed locally by the engine, plus an on-demand "Explain this move" that asks a model for a plain-English reason grounded in the engine\'s own eval delta. Vendored single-threaded WASM engine, so it runs client-side with no special headers; puzzles are validated at build and runtime.',
+      'A browser chess game: play Stockfish at adjustable strength, solve a daily mate-in-one, and get a live eval bar, move verdict, and immediate engine summary. Optional AI explanations use the engine\'s evaluation as context when the backend is connected. Vendored single-threaded WASM keeps the engine in your browser.',
     badge: { label: 'Live demo', cls: 'badge-live', live: true },
     tags: ['Stockfish WASM', 'chess.js', 'Cloudflare Functions', 'Vanilla JS'],
     links: [
@@ -116,10 +130,9 @@ export default function Portfolio() {
               <div className="dev-profile-name">Rene Ledesma</div>
               <div className="dev-profile-role">Full-stack engineer · React / TS / Node</div>
               <div className="dev-profile-links">
-                {/* TODO: drop the PDF at public/resume.pdf */}
                 <a
                   className="proj-link proj-link--accent"
-                  href="/resume.pdf"
+                  href="/resume.pdf?v=2026-10-16"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

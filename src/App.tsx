@@ -12,6 +12,9 @@ import RagDemo from './pages/RagDemo';
 import NexusDemo from './pages/NexusDemo';
 import StrandDemo from './pages/StrandDemo';
 import ChessDemo from './pages/ChessDemo';
+import NovoDemo from './pages/NovoDemo';
+import DsaDemo from './pages/DsaDemo';
+import PortfolioBackdrop from './components/PortfolioBackdrop';
 import { siteMode, OTHER_SITE } from './site';
 
 export default function App() {
@@ -20,6 +23,7 @@ export default function App() {
 
   return (
     <div className={`app site-${site}`}>
+      {site === 'dev' && <PortfolioBackdrop />}
       <NavBar site={site} />
       <main className="app-content">
         <Routes>
@@ -35,6 +39,8 @@ export default function App() {
           <Route path="/projects/nexus" element={<NexusDemo />} />
           <Route path="/projects/strand" element={<StrandDemo />} />
           <Route path="/projects/chess" element={<ChessDemo />} />
+          <Route path="/projects/novo" element={<NovoDemo />} />
+          <Route path="/projects/dsa" element={<DsaDemo />} />
         </Routes>
       </main>
       <footer className="footer">
