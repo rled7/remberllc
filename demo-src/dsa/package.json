@@ -1,0 +1,17 @@
+{
+  "name": "dsa-study-buddy",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:public": "tsc && vite build --mode public",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1"
+  }
+}

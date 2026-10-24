@@ -18,7 +18,7 @@ export default function ChessDemo() {
             adjustable strength, solve the <strong>daily puzzle</strong>, and switch on
             <strong> coach mode</strong>: a live eval bar and a per-move verdict come from the engine
             locally (free, instant), while an on-demand <strong>&ldquo;Explain this move&rdquo;</strong>{' '}
-            asks a model for a plain-English reason — grounded in the engine&rsquo;s own eval numbers.
+            shows an immediate engine summary, with an optional AI explanation when coaching is connected.
             Vendored single-threaded engine, so it needs no special headers; the whole board runs
             client-side.
           </p>

@@ -9,11 +9,27 @@ interface Work {
   blurb: string;
   tags: string[];
   grad: string;           // the tile's signature gradient
+  image?: string;
   demo?: string;          // internal live-demo route
   github?: string;
 }
 
 const WORK: Work[] = [
+  {
+    title: 'DSA Study Buddy',
+    blurb: 'Practice algorithms by pattern, run JavaScript test cases, compare solutions, and keep your progress on this device.',
+    tags: ['TypeScript', 'Algorithms', 'Web Workers'],
+    grad: 'linear-gradient(135deg,#0c2427,#136d65 65%,#2dd4bf)',
+    demo: '/projects/dsa',
+  },
+  {
+    title: 'NOVO — Premium Brand Experience',
+    blurb: 'A premium sneaker concept: layered parallax, mouse responsive 3D, and scroll controlled storytelling. Adaptable for visual brands and premium services.',
+    tags: ['Three.js', 'GSAP', 'React', 'Responsive design'],
+    grad: 'linear-gradient(135deg,#11150d,#394724 65%,#d6fa69)',
+    image: '/demos/novo-preview.jpg',
+    demo: '/projects/novo',
+  },
   {
     title: 'NexusScale',
     blurb: 'A 100% in-browser image & PDF upscaler — 4K/8K targets, Web-Worker pipeline, fully offline.',
@@ -66,8 +82,7 @@ const WORK: Work[] = [
 const STACK = ['TypeScript', 'React', 'Node', 'Cloudflare Workers', 'Vite', 'Python', 'C++', 'RAG / NLP'];
 
 function Portrait() {
-  // Drop a real photo at public/profile.jpg to replace the monogram. The hover effect
-  // (grayscale → color + lift) works either way.
+  // The original color portrait is self-hosted; the monogram backs up a failed image.
   return (
     <div className="portrait">
       <img src="/profile.jpg" alt="Rene Ledesma" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
@@ -92,7 +107,7 @@ export default function DevHome() {
             </p>
             <div className="dev-cta">
               <a className="dbtn dbtn--primary" href="#work">View work ↓</a>
-              <a className="dbtn" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Résumé ↗</a>
+              <a className="dbtn" href="/resume.pdf?v=2026-10-16" target="_blank" rel="noopener noreferrer">Résumé ↗</a>
               <Link className="dbtn" to="/contact">Get in touch</Link>
               <a className="dbtn" href="https://github.com/rled7" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
             </div>
@@ -113,7 +128,7 @@ export default function DevHome() {
             {WORK.map((w, i) => (
               <Reveal key={w.title} className="work" delay={(i % 3) * 80}>
                 <article className="work-card">
-                  <div className="work-visual" style={{ backgroundImage: w.grad }}>
+                  <div className="work-visual" style={{ backgroundImage: w.image ? `linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.7)),url(${w.image})` : w.grad }}>
                     <span className="work-index">{String(i + 1).padStart(2, '0')}</span>
                     <h3 className="work-title">{w.title}</h3>
                   </div>

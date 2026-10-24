@@ -1,0 +1,14 @@
+{
+  "originalBytes": 7833592,
+  "optimizedBytes": 3076916,
+  "reductionPercent": 60.7,
+  "maximumTextureDimension": 1024,
+  "source": "Materials Variants Shoe, © 2021 Shopify, CC BY 4.0",
+  "operations": [
+    "remove unused material variants",
+    "remove unused baked base color textures",
+    "deduplicate and prune",
+    "resize retained surface maps to at most 1024px",
+    "lossless WebP compression of retained maps"
+  ]
+}

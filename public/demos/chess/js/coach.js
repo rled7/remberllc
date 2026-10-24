@@ -7,6 +7,8 @@
 //     which asks Claude for a one-paragraph explanation. Grounding the model in
 //     real eval deltas keeps it from inventing chess claims.
 
+import { engineExplanation } from './engine-explanation.js';
+
 const EXPLAIN_ENDPOINT = '/api/explain';
 
 // Map a raw score to a "big number" so mate and centipawns compare on one axis.
@@ -43,6 +45,7 @@ export class Coach {
     this.prev = null;        // analysis of the position *before* the latest move
     this.lastReview = null;  // payload for the Explain button
     this.enabled = true;
+    this.explainRequest = null;
 
     if (this.els.explainBtn) {
       this.els.explainBtn.addEventListener('click', () => this._explain());
@@ -56,6 +59,10 @@ export class Coach {
 
   // Call once for the starting position to seed the eval bar + baseline.
   async seed(fen) {
+    this.explainRequest?.abort();
+    this.lastReview = null;
+    if (this.els.explainBtn) this.els.explainBtn.disabled = true;
+    if (this.els.explainOut) this.els.explainOut.textContent = '';
     const a = await this.engine.evaluate(fen);
     this.prev = a;
     this._paintBar(a);
@@ -77,6 +84,7 @@ export class Coach {
     const verdict = VERDICTS.find((v) => loss >= v.min);
     this._paintVerdict(verdict, move);
 
+    this.explainRequest?.abort();
     this.lastReview = {
       fen: move.before,
       san: move.san,
@@ -107,27 +115,38 @@ export class Coach {
 
   async _explain() {
     if (!this.lastReview) return;
+    const review = this.lastReview;
     const { explainBtn, explainOut } = this.els;
-    if (explainOut) explainOut.textContent = 'Thinking…';
+    const summary = `Engine summary: ${engineExplanation(review)}`;
+    if (explainOut) explainOut.textContent = `${summary}\n\nChecking for an AI explanation…`;
     if (explainBtn) explainBtn.disabled = true;
+    this.explainRequest?.abort();
+    const request = new AbortController();
+    this.explainRequest = request;
+    const timeout = setTimeout(() => request.abort(), 8000);
     try {
       const res = await fetch(EXPLAIN_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.lastReview),
+        body: JSON.stringify(review),
+        signal: request.signal,
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      if (explainOut) explainOut.textContent = data.explanation || 'No explanation returned.';
+      if (!res.ok) throw new Error(data.error === 'coach_not_configured'
+        ? 'AI coaching has not been connected yet.'
+        : res.status === 429 ? 'AI coaching is busy; try again shortly.' : 'AI coaching is temporarily unavailable.');
+      if (typeof data.explanation !== 'string' || !data.explanation.trim()) throw new Error('AI coaching returned no explanation.');
+      if (this.lastReview === review && explainOut) explainOut.textContent = `AI explanation: ${data.explanation}`;
     } catch (err) {
-      // Coach mode's local eval already worked — only the LLM add-on failed.
-      if (explainOut) {
-        explainOut.textContent =
-          'Explain is unavailable (the coach backend isn’t configured). The eval bar and verdict above still work offline.';
+      if (this.lastReview === review && explainOut) {
+        const reason = request.signal.aborted ? 'AI coaching timed out.'
+          : err instanceof TypeError ? 'AI coaching could not be reached.' : err.message;
+        explainOut.textContent = `${summary}\n\n${reason} This summary uses the local engine.`;
       }
-      console.warn('explain failed:', err);
     } finally {
-      if (explainBtn) explainBtn.disabled = false;
+      clearTimeout(timeout);
+      if (this.lastReview === review && explainBtn) explainBtn.disabled = false;
+      if (this.explainRequest === request) this.explainRequest = null;
     }
   }
 }
